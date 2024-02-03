@@ -3,8 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 import pandas as pd
-import os
-import glob
 
 class ParticleAnalyzer:
     def __init__(self, image_path, output_folder='Results', thresh_size=[10, 200], size2pixel=0.00581395):
@@ -71,8 +69,13 @@ class ParticleAnalyzer:
 
 
 
-
+from tkinter import Tk
 from tkinter.filedialog import askopenfilename
+
+# Tkinter-Fenster initialisieren
+root = Tk()
+root.withdraw()  # Verhindert, dass das leere Hauptfenster angezeigt wird
+
 
 image_path = askopenfilename()
 
@@ -85,3 +88,4 @@ cv2.imwrite('2. roi.jpg', analyzer.roi)
 cv2.imwrite('3. binary.jpg', analyzer.binary_image)
 cv2.imwrite('4. contour.jpg', analyzer.contimg)
 cv2.imwrite('5. contour_postprocess.jpg', analyzer.contimpgpp)
+data_img.to_csv('60.csv', index=False)
