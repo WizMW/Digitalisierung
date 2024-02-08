@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
 import math
 import pandas as pd
+
 
 class ParticleAnalyzer:
     def __init__(self, image_path, output_folder='Results', thresh_size=[8, 200], size2pixel=0.00581395):
@@ -14,7 +14,6 @@ class ParticleAnalyzer:
         self.binary_image = None
         self.contimg = None
         self.contimpgpp = None
-
 
     def image_croping(self):
         self.img = cv2.imread(self.image_path, cv2.IMREAD_GRAYSCALE)
@@ -28,11 +27,10 @@ class ParticleAnalyzer:
         _, self.binary_image = cv2.threshold(self.roi, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
         return self.binary_image
     
-
     def process_image(self):
         self.image_croping()
         self.binarization()
-        contours, _ = cv2.findContours(self.binary_image, cv2.RETR_LIST , cv2.CHAIN_APPROX_SIMPLE )
+        contours, _ = cv2.findContours(self.binary_image, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         self.contimg = (self.roi).copy()
         self.contimpgpp = self.contimg.copy()
         cv2.drawContours(self.contimg, contours, -1, (0, 255, 0), 2)        
@@ -40,7 +38,7 @@ class ParticleAnalyzer:
         for i, array_3d in enumerate(contours):
             points = array_3d.reshape(-1, 2)
 
-            if not np.isin(0, points).any() or np.isin(self.binary_image.shape[0], points[:,0]).any() or np.isin(self.binary_image.shape[1], points[:,1]):
+            if not np.isin(0, points).any() or np.isin(self.binary_image.shape[0], points[:, 0]).any() or np.isin(self.binary_image.shape[1], points[:, 1]):
                 new_array = points
                 new_array.reshape(array_3d.shape)
                 new_contours += (new_array,)
@@ -58,9 +56,9 @@ class ParticleAnalyzer:
                 if not any(math.isnan(value) for value in axes) and max(axes) < self.thresh_size[1] and min(axes) > self.thresh_size[0]:
                     cv2.drawContours(self.contimpgpp, [contour], -1, (0, 255, 0), 2)
                     Area = cv2.contourArea(contour)
-                    Area_array = np.append(Area_array,Area)
+                    Area_array = np.append(Area_array, Area)
                     major_axis = max(axes)
-                    minor_axis = min(axes)
+                    # minor_axis = min(axes)
                     radius = major_axis / 2.0
                     radii_array = np.append(radii_array, radius)
         
@@ -73,23 +71,23 @@ class ParticleAnalyzer:
 
 
 
-#from tkinter import Tk
-#from tkinter.filedialog import askopenfilename
+# from tkinter import Tk
+# from tkinter.filedialog import askopenfilename
 
 # Tkinter-Fenster initialisieren
-#root = Tk()
-#root.withdraw()  # Verhindert, dass das leere Hauptfenster angezeigt wird
+# root = Tk()
+# root.withdraw()  # Verhindert, dass das leere Hauptfenster angezeigt wird
 
 
-#image_path = askopenfilename()
+# image_path = askopenfilename()
 
 
-#analyzer = ParticleAnalyzer(image_path)
-#data_img = analyzer.process_image()
+# analyzer = ParticleAnalyzer(image_path)
+# data_img = analyzer.process_image()
 
-#cv2.imwrite('1. img.jpg', analyzer.img)
-#cv2.imwrite('2. roi.jpg', analyzer.roi)
-#cv2.imwrite('3. binary.jpg', analyzer.binary_image)
-#cv2.imwrite('4. contour.jpg', analyzer.contimg)
-#cv2.imwrite('5. contour_postprocess.jpg', analyzer.contimpgpp)
-#data_img.to_csv('60.csv', index=False)
+# cv2.imwrite('1. img.jpg', analyzer.img)
+# cv2.imwrite('2. roi.jpg', analyzer.roi)
+# cv2.imwrite('3. binary.jpg', analyzer.binary_image)
+# cv2.imwrite('4. contour.jpg', analyzer.contimg)
+# cv2.imwrite('5. contour_postprocess.jpg', analyzer.contimpgpp)
+# data_img.to_csv('60.csv', index=False)
