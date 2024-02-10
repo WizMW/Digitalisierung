@@ -21,7 +21,7 @@ class ParticleAnalyzer:
         start_y, end_y = int(0 * self.img.shape[0]), int(0.5 * self.img.shape[0])
         self.roi = self.img[start_y:end_y, start_x:end_x]
         return self.roi
-    
+
     def binarization(self):
         # Otsu binarisation
         _, self.binary_image = cv2.threshold(self.roi, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
@@ -33,7 +33,7 @@ class ParticleAnalyzer:
         contours, _ = cv2.findContours(self.binary_image, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         self.contimg = (self.roi).copy()
         self.contimpgpp = self.contimg.copy()
-        cv2.drawContours(self.contimg, contours, -1, (0, 255, 0), 2)        
+        cv2.drawContours(self.contimg, contours, -1, (0, 255, 0), 2)   
         new_contours = ()
         for i, array_3d in enumerate(contours):
             points = array_3d.reshape(-1, 2)
@@ -51,8 +51,7 @@ class ParticleAnalyzer:
             if contour.shape[0] >= 5:
                 # Fit an ellipse to the contour
                 ellipse = cv2.fitEllipse(contour)
-                center, axes, angle = ellipse
-                                                        
+                center, axes, angle = ellipse                      
                 if not any(math.isnan(value) for value in axes) and max(axes) < self.thresh_size[1] and min(axes) > self.thresh_size[0]:
                     cv2.drawContours(self.contimpgpp, [contour], -1, (0, 255, 0), 2)
                     Area = cv2.contourArea(contour)
@@ -61,7 +60,6 @@ class ParticleAnalyzer:
                     # minor_axis = min(axes)
                     radius = major_axis / 2.0
                     radii_array = np.append(radii_array, radius)
-        
         data_img = pd.DataFrame(Area_array, columns=["Particle_Area"])*(self.size2pixel**2)
      #   data_img = data_img.rename(columns={image_path: 'Neuer_Name'})
         return data_img
