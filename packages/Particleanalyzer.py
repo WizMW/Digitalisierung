@@ -5,7 +5,7 @@ import pandas as pd
 
 
 class ParticleAnalyzer:
-    def __init__(self, image_path, output_folder='Results', thresh_size=[8, 200], size2pixel=0.00581395):
+    def __init__(self, image_path, output_folder='Results', thresh_size=[10, 200], size2pixel=0.00581395):
         self.image_path = image_path
         self.thresh_size = thresh_size
         self.size2pixel = size2pixel
@@ -17,16 +17,20 @@ class ParticleAnalyzer:
 
     def image_croping(self):
         self.img = cv2.imread(self.image_path, cv2.IMREAD_GRAYSCALE)
-        start_x, end_x = int(0.25 * self.img.shape[1]), int(0.75 * self.img.shape[1])
-        start_y, end_y = int(0 * self.img.shape[0]), int(0.5 * self.img.shape[0])
+        start_x, end_x = int(0.1 * self.img.shape[1]), int(0.7 * self.img.shape[1])
+        start_y, end_y = int(0 * self.img.shape[0]), int(1 * self.img.shape[0])
         self.roi = self.img[start_y:end_y, start_x:end_x]
         return self.roi
 
     def binarization(self):
-        # Otsu binarisation
-        _, self.binary_image = cv2.threshold(self.roi, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        self.roi = cv2.medianBlur(self.roi, 5)
+         # Otsu Threshold
+        #_, self.binary_image = cv2.threshold(self.roi, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        # Adaptive Threshold
+        self.binary_image = cv2.adaptiveThreshold(self.roi,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
+                     cv2.THRESH_BINARY, 1001, 0)        
         return self.binary_image
-    
+
     def process_image(self):
         self.image_croping()
         self.binarization()
@@ -61,7 +65,7 @@ class ParticleAnalyzer:
                     radius = major_axis / 2.0
                     radii_array = np.append(radii_array, radius)
         data_img = pd.DataFrame(Area_array, columns=["Particle_Area"])*(self.size2pixel**2)
-     #   data_img = data_img.rename(columns={image_path: 'Neuer_Name'})
+    #   data_img = data_img.rename(columns={image_path: 'Neuer_Name'})
         return data_img
 
 
@@ -72,13 +76,11 @@ class ParticleAnalyzer:
 # from tkinter import Tk
 # from tkinter.filedialog import askopenfilename
 
-# Tkinter-Fenster initialisieren
+# # Tkinter-Fenster initialisieren
 # root = Tk()
 # root.withdraw()  # Verhindert, dass das leere Hauptfenster angezeigt wird
 
-
 # image_path = askopenfilename()
-
 
 # analyzer = ParticleAnalyzer(image_path)
 # data_img = analyzer.process_image()
