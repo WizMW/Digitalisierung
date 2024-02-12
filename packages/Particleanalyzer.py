@@ -25,10 +25,10 @@ class ParticleAnalyzer:
     def binarization(self):
         self.roi = cv2.medianBlur(self.roi, 5)
          # Otsu Threshold
-        #_, self.binary_image = cv2.threshold(self.roi, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        # _, self.binary_image = cv2.threshold(self.roi, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
         # Adaptive Threshold
         self.binary_image = cv2.adaptiveThreshold(self.roi,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
-                     cv2.THRESH_BINARY, 1001, 0)        
+                     cv2.THRESH_BINARY, 1001, 0)
         return self.binary_image
 
     def process_image(self):
@@ -58,6 +58,7 @@ class ParticleAnalyzer:
                 center, axes, angle = ellipse                      
                 if not any(math.isnan(value) for value in axes) and max(axes) < self.thresh_size[1] and min(axes) > self.thresh_size[0]:
                     cv2.drawContours(self.contimpgpp, [contour], -1, (0, 255, 0), 2)
+                    # cv2.ellipse(self.contimpgpp, ellipse, (0, 255, 0), 2)
                     Area = cv2.contourArea(contour)
                     Area_array = np.append(Area_array, Area)
                     major_axis = max(axes)
@@ -73,21 +74,21 @@ class ParticleAnalyzer:
 
 
 
-# from tkinter import Tk
-# from tkinter.filedialog import askopenfilename
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
 
-# # Tkinter-Fenster initialisieren
-# root = Tk()
-# root.withdraw()  # Verhindert, dass das leere Hauptfenster angezeigt wird
+# Tkinter-Fenster initialisieren
+root = Tk()
+root.withdraw()  # Verhindert, dass das leere Hauptfenster angezeigt wird
 
-# image_path = askopenfilename()
+image_path = askopenfilename()
 
-# analyzer = ParticleAnalyzer(image_path)
-# data_img = analyzer.process_image()
+analyzer = ParticleAnalyzer(image_path)
+data_img = analyzer.process_image()
 
-# cv2.imwrite('1. img.jpg', analyzer.img)
-# cv2.imwrite('2. roi.jpg', analyzer.roi)
-# cv2.imwrite('3. binary.jpg', analyzer.binary_image)
-# cv2.imwrite('4. contour.jpg', analyzer.contimg)
-# cv2.imwrite('5. contour_postprocess.jpg', analyzer.contimpgpp)
-# data_img.to_csv('60.csv', index=False)
+cv2.imwrite('1. img.jpg', analyzer.img)
+cv2.imwrite('2. roi.jpg', analyzer.roi)
+cv2.imwrite('3. binary.jpg', analyzer.binary_image)
+cv2.imwrite('4. contour.jpg', analyzer.contimg)
+cv2.imwrite('5. contour_postprocess.jpg', analyzer.contimpgpp)
+#data_img.to_csv('60.csv', index=False)
