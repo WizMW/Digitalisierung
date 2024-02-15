@@ -16,7 +16,6 @@ class Distribution:
 
     def PGV(self, hist_size = 1000):
         diameter = np.sqrt(self.data_area/np.pi)
-        mass = 4/3 * np.pi * ((diameter/2)**3)
         self.q0, xi = np.histogram(diameter, hist_size)
         self.Q0 = np.cumsum(self.q0) / np.sum(self.q0)
         # Q3 Berechnung
@@ -32,8 +31,7 @@ class Distribution:
         def weibull_cdf(x, c, loc, scale):
             return weibull_min.cdf(x, c, loc=loc, scale=scale)
 
-        if self.Q3 is None:
-            self.PGV()
+        self.PGV()
         # Define the cumulative probabilities
         x = self.bins
         # Curve fitting using Least Squares Method (LSM)
